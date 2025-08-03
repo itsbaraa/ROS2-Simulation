@@ -1,30 +1,49 @@
-# ROS2 Arduinobot Visualization with Joint State Publisher
+# ROS2 Arduinobot Control and Visualization
 
-This project demonstrates the basic visualization of a URDF-based robot model (Arduinobot) in ROS2's 3D visualization tool, RViz. The robot's pose is controlled interactively using the `joint_state_publisher_gui`.
+This project demonstrates two fundamental methods for interacting with and controlling a robot arm in ROS2 using the Arduinobot model.
 
-## Overview
+1.  **Direct Joint Visualization**: Manually posing the robot using GUI sliders.
+2.  **Motion Planning**: Using the MoveIt framework to intelligently plan a trajectory to a goal.
 
-In ROS2, visualizing a robot's model is a fundamental first step before moving on to more complex tasks like simulation and physical control. This process involves a few key nodes working together:
+# Prerequisite
+Install the robot arm package from this [repo](https://github.com/smart-methods/Robot_Arm_ROS2).
 
-1.  **`robot_state_publisher`**: This node reads the robot's description from a URDF file and subscribes to the `/joint_states` topic to get the current angles of all joints. It then calculates the 3D poses of all the robot's links and publishes them as TF2 transforms.
-2.  **`joint_state_publisher_gui`**: This node provides a simple graphical interface with sliders for each non-fixed joint defined in the URDF. By moving the sliders, this node publishes messages to the `/joint_states` topic, effectively telling the `robot_state_publisher` what the "current" joint angles are.
-3.  **RViz**: This is the primary 3D visualization tool in ROS. It subscribes to the TF2 transforms published by the `robot_state_publisher` to display the `RobotModel` in its correct pose.
+---
 
-The goal of this task is to launch these components and use the GUI sliders to manually control the pose of the Arduinobot model within RViz.
+## Task 1: Interactive Visualization with Joint State Publisher
 
-## How It Was Done
+This task focuses on visualizing the robot model in RViz and manually controlling its pose. By launching the `display.launch.xml` file, the `joint_state_publisher_gui` is started. This tool provides sliders to directly manipulate the angle of each joint, which is useful for debugging the robot's model and understanding its basic movements.
 
-To achieve this, I executed the following ROS2 launch command in my terminal. This command starts RViz, the `robot_state_publisher`, and the `joint_state_publisher_gui`, all pre-configured for the Arduinobot.
+### Usage
+
+The following command starts RViz and the necessary nodes for visualization:
 
 ```bash
 ros2 launch arduinobot_description simulation.launch.py
 ```
 
-Once the RViz window appeared, I used the sliders in the "Joint State Publisher" window to change the values for `joint_1` and `joint_2`. This action published the new joint angles to the `/joint_states` topic, which RViz then used to update the visualization of the robot arm in real-time.
+### Result
 
-## Result
+The screenshot below shows the `joint_state_publisher_gui` being used to articulate the robot arm inside RViz.
 
-The screenshot below confirms the successful execution of the task. It shows:
-- The RViz window displaying the Arduinobot model.
-- The "Joint State Publisher" panel with sliders used to manipulate the joint angles.
-- The robot arm in a custom pose corresponding to the values set by the sliders, demonstrating that the visualization is being actively controlled.
+<img width="1454" height="769" alt="image" src="https://github.com/user-attachments/assets/8c9a2efb-bb3a-4d2f-b645-f99db1292879" />
+
+---
+
+## Task 2: Motion Planning with MoveIt
+
+This task demonstrates a more advanced method of control using the MoveIt motion planning framework. Instead of controlling individual joints, we define a high-level goal (e.g., a pre-defined "down" position) for the robot's end-effector. MoveIt's kinematic solvers and planners then automatically compute a collision-free joint trajectory to reach that goal.
+
+### Usage
+
+The following command starts the MoveIt planning environment for the Arduinobot:
+
+```bash
+ros2 launch arduinobot_mc demo.launch.py
+```
+
+### Result
+
+The screenshot below shows the MoveIt `MotionPlanning` panel in RViz. A start state (orange robot) and a goal state (green robot) are defined, and MoveIt has successfully generated a planned trajectory (the multi-colored path) between them.
+
+<img width="1916" height="913" alt="image" src="https://github.com/user-attachments/assets/63b97e10-6f3e-4086-9b4b-bd7d2bde1531" />
